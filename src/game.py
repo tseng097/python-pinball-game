@@ -72,12 +72,12 @@ class PinballGame:
         self.ball = None
         self.spawn_ball()
 
-        handler = self.space.add_collision_handler(1, 2)
-        handler.begin = self._on_ball_hits_bumper
+        # Pymunk 6.8+ uses Space.on_collision instead of add_collision_handler
+        self.space.on_collision(1, 2, begin=self._on_ball_hits_bumper)
 
     def _on_ball_hits_bumper(self, arbiter, space, data):
-        shapes = arbiter.shapes
-        for s in shapes:
+        # Called by pymunk collision callback
+        for s in arbiter.shapes:
             if hasattr(s, "score_value"):
                 self.score += int(s.score_value)
                 break
