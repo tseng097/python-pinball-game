@@ -10,6 +10,7 @@ from .settings import (
     INITIAL_BALLS,
     LAUNCHER_CHARGE_RATE,
     LAUNCHER_MAX_FORCE,
+    SPACE_DAMPING,
     TEXT_COLOR,
     WIDTH,
 )
@@ -44,6 +45,7 @@ class PinballGame:
     def reset_game(self):
         self.space = pymunk.Space()
         self.space.gravity = GRAVITY
+        self.space.damping = SPACE_DAMPING
 
         self.score = 0
         self.balls_left = INITIAL_BALLS

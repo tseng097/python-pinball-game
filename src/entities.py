@@ -8,6 +8,7 @@ from .settings import (
     BALL_MASS,
     BALL_RADIUS,
     BUMPER_COLOR,
+    BUMPER_ELASTICITY,
     FLIPPER_COLOR,
     HEIGHT,
     WALL_COLOR,
@@ -56,7 +57,7 @@ def create_bumpers(space):
         body = pymunk.Body(body_type=pymunk.Body.STATIC)
         body.position = p
         shape = pymunk.Circle(body, 26)
-        shape.elasticity = 1.2
+        shape.elasticity = BUMPER_ELASTICITY
         shape.friction = 0.2
         shape.collision_type = 2
         shape.score_value = 100
