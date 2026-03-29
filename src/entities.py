@@ -11,6 +11,7 @@ from .settings import (
     BUMPER_ELASTICITY,
     FLIPPER_COLOR,
     HEIGHT,
+    MAX_BALL_SPEED,
     WALL_COLOR,
     WIDTH,
 )
@@ -71,6 +72,7 @@ def create_ball(space, x=545, y=150):
     moment = pymunk.moment_for_circle(BALL_MASS, 0, BALL_RADIUS)
     body = pymunk.Body(BALL_MASS, moment)
     body.position = (x, y)
+    body.velocity_limit = MAX_BALL_SPEED
     shape = pymunk.Circle(body, BALL_RADIUS)
     shape.elasticity = BALL_ELASTICITY
     shape.friction = BALL_FRICTION

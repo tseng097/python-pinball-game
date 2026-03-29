@@ -9,7 +9,7 @@ sys.path.insert(0, ROOT)
 import pymunk
 
 from src.entities import create_ball, create_boundaries, create_bumpers
-from src.settings import GRAVITY, SPACE_DAMPING, WIDTH
+from src.settings import GRAVITY, MAX_BALL_SPEED, SPACE_DAMPING, WIDTH
 
 
 class PhysicsStabilityTests(unittest.TestCase):
@@ -32,6 +32,18 @@ class PhysicsStabilityTests(unittest.TestCase):
             self.assertLess(abs(x), WIDTH * 3)
             self.assertLess(abs(y), WIDTH * 3)
             self.assertLess(ball.body.velocity.length, 4000)
+
+    def test_ball_velocity_cap_applies(self):
+        space = pymunk.Space()
+        space.gravity = GRAVITY
+        space.damping = SPACE_DAMPING
+
+        create_boundaries(space)
+        ball = create_ball(space)
+        ball.body.apply_impulse_at_local_point((0, MAX_BALL_SPEED * 10), (0, 0))
+
+        space.step(1 / 60.0)
+        self.assertLessEqual(ball.body.velocity.length, MAX_BALL_SPEED + 1e-3)
 
 
 if __name__ == "__main__":
