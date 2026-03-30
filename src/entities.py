@@ -10,6 +10,8 @@ from .settings import (
     BUMPER_COLOR,
     BUMPER_ELASTICITY,
     FLIPPER_COLOR,
+    FLIPPER_ANGULAR_VELOCITY_LIMIT,
+    FLIPPER_MAX_FORCE,
     HEIGHT,
     MAX_BALL_SPEED,
     WALL_COLOR,
@@ -98,7 +100,8 @@ class Flipper:
         self.pin = pymunk.PinJoint(self.body, anchor, (0, 0), (0, 0))
         self.limit = pymunk.RotaryLimitJoint(self.body, anchor, rest_angle, max_angle)
         self.motor = pymunk.SimpleMotor(self.body, anchor, 0.0)
-        self.motor.max_force = 2_000_000
+        self.motor.max_force = FLIPPER_MAX_FORCE
+        self.body.angular_velocity_limit = FLIPPER_ANGULAR_VELOCITY_LIMIT
 
         self.rest_angle = rest_angle
         self.max_angle = max_angle
