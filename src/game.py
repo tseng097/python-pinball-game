@@ -2,15 +2,14 @@ import sys
 import pygame
 import pymunk
 
+from .physics import configure_space, step_space
 from .settings import (
     BG_COLOR,
     FPS,
-    GRAVITY,
     HEIGHT,
     INITIAL_BALLS,
     LAUNCHER_CHARGE_RATE,
     LAUNCHER_MAX_FORCE,
-    SPACE_DAMPING,
     TEXT_COLOR,
     WIDTH,
 )
@@ -44,8 +43,7 @@ class PinballGame:
 
     def reset_game(self):
         self.space = pymunk.Space()
-        self.space.gravity = GRAVITY
-        self.space.damping = SPACE_DAMPING
+        configure_space(self.space)
 
         self.score = 0
         self.balls_left = INITIAL_BALLS
@@ -141,7 +139,7 @@ class PinballGame:
                 self.launch_power + LAUNCHER_CHARGE_RATE * dt,
             )
 
-        self.space.step(dt)
+        step_space(self.space, dt)
 
         if self.ball:
             bx, by = self.ball.body.position
