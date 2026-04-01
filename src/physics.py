@@ -1,6 +1,12 @@
 import pymunk
 
-from .settings import GRAVITY, SPACE_DAMPING, SPACE_ITERATIONS, PHYSICS_SUBSTEPS
+from .settings import (
+    GRAVITY,
+    PHYSICS_MAX_DT,
+    PHYSICS_SUBSTEPS,
+    SPACE_DAMPING,
+    SPACE_ITERATIONS,
+)
 
 
 def configure_space(space: pymunk.Space) -> None:
@@ -10,6 +16,7 @@ def configure_space(space: pymunk.Space) -> None:
 
 
 def step_space(space: pymunk.Space, dt: float) -> None:
-    sub_dt = dt / PHYSICS_SUBSTEPS
+    safe_dt = min(dt, PHYSICS_MAX_DT)
+    sub_dt = safe_dt / PHYSICS_SUBSTEPS
     for _ in range(PHYSICS_SUBSTEPS):
         space.step(sub_dt)

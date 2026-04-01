@@ -13,6 +13,8 @@ from src.physics import configure_space, step_space
 from src.settings import (
     FLIPPER_ANGULAR_VELOCITY_LIMIT,
     MAX_BALL_SPEED,
+    HEIGHT,
+    PHYSICS_MAX_DT,
     WIDTH,
 )
 
@@ -47,6 +49,20 @@ class PhysicsStabilityTests(unittest.TestCase):
 
         step_space(space, 1 / 60.0)
         self.assertLessEqual(ball.body.velocity.length, MAX_BALL_SPEED + 1e-3)
+
+    def test_step_space_clamps_large_dt(self):
+        space = pymunk.Space()
+        configure_space(space)
+
+        create_boundaries(space)
+        ball = create_ball(space, x=WIDTH / 2, y=HEIGHT / 2)
+        ball.body.velocity = (1000, 0)
+
+        x0, _ = ball.body.position
+        step_space(space, PHYSICS_MAX_DT * 10)
+        x1, _ = ball.body.position
+
+        self.assertLessEqual(x1 - x0, 1000 * PHYSICS_MAX_DT * 1.1)
 
     def test_flipper_limits_and_angular_velocity(self):
         space = pymunk.Space()
