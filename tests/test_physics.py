@@ -106,6 +106,22 @@ class PhysicsStabilityTests(unittest.TestCase):
             self.assertLessEqual(x, WIDTH + 10)
             self.assertGreaterEqual(y, -10)
 
+    def test_fast_ball_large_dt_stays_in_bounds(self):
+        space = pymunk.Space()
+        configure_space(space)
+
+        create_boundaries(space)
+        ball = create_ball(space, x=60, y=200)
+        ball.body.velocity = (-6000, 0)
+
+        dt = PHYSICS_MAX_DT
+        for _ in range(120):
+            step_space(space, dt)
+            x, y = ball.body.position
+            self.assertGreaterEqual(x, -10)
+            self.assertLessEqual(x, WIDTH + 10)
+            self.assertGreaterEqual(y, -10)
+
 
 if __name__ == "__main__":
     unittest.main()
