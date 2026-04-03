@@ -12,6 +12,8 @@ from src.entities import Flipper, create_ball, create_boundaries, create_bumpers
 from src.physics import configure_space, step_space
 from src.settings import (
     FLIPPER_ANGULAR_VELOCITY_LIMIT,
+    FLIPPER_SPRING_DAMPING,
+    FLIPPER_SPRING_STIFFNESS,
     MAX_BALL_SPEED,
     HEIGHT,
     PHYSICS_MAX_DT,
@@ -121,6 +123,33 @@ class PhysicsStabilityTests(unittest.TestCase):
             self.assertGreaterEqual(x, -10)
             self.assertLessEqual(x, WIDTH + 10)
             self.assertGreaterEqual(y, -10)
+
+    def test_flipper_returns_to_rest_when_released(self):
+        space = pymunk.Space()
+        configure_space(space)
+        space.gravity = (0, 0)
+
+        flipper = Flipper(
+            space,
+            pos=(240, 145),
+            length=90,
+            rest_angle=-0.45,
+            max_angle=0.55,
+            is_left=True,
+        )
+
+        dt = 1 / 120.0
+        for step in range(120):
+            flipper.set_active(True)
+            step_space(space, dt)
+        for _ in range(240):
+            flipper.set_active(False)
+            step_space(space, dt)
+
+        self.assertAlmostEqual(flipper.body.angle, flipper.rest_angle, delta=0.08)
+        self.assertLess(abs(flipper.body.angular_velocity), 1.0)
+        self.assertGreater(FLIPPER_SPRING_STIFFNESS, 0)
+        self.assertGreater(FLIPPER_SPRING_DAMPING, 0)
 
 
 if __name__ == "__main__":

@@ -12,6 +12,8 @@ from .settings import (
     FLIPPER_COLOR,
     FLIPPER_ANGULAR_VELOCITY_LIMIT,
     FLIPPER_MAX_FORCE,
+    FLIPPER_SPRING_DAMPING,
+    FLIPPER_SPRING_STIFFNESS,
     HEIGHT,
     MAX_BALL_SPEED,
     WALL_COLOR,
@@ -101,6 +103,13 @@ class Flipper:
         self.limit = pymunk.RotaryLimitJoint(self.body, anchor, rest_angle, max_angle)
         self.motor = pymunk.SimpleMotor(self.body, anchor, 0.0)
         self.motor.max_force = FLIPPER_MAX_FORCE
+        self.spring = pymunk.DampedRotarySpring(
+            self.body,
+            anchor,
+            rest_angle,
+            FLIPPER_SPRING_STIFFNESS,
+            FLIPPER_SPRING_DAMPING,
+        )
         self.body.angular_velocity_limit = FLIPPER_ANGULAR_VELOCITY_LIMIT
 
         self.rest_angle = rest_angle
@@ -108,10 +117,23 @@ class Flipper:
         self.up_speed = 18 if is_left else -18
         self.down_speed = -14 if is_left else 14
 
-        space.add(self.body, self.shape, self.pin, self.limit, self.motor, anchor)
+        space.add(
+            self.body,
+            self.shape,
+            self.pin,
+            self.limit,
+            self.motor,
+            self.spring,
+            anchor,
+        )
 
     def set_active(self, active: bool):
-        self.motor.rate = self.up_speed if active else self.down_speed
+        if active:
+            self.motor.rate = self.up_speed
+            self.motor.max_force = FLIPPER_MAX_FORCE
+        else:
+            self.motor.rate = 0.0
+            self.motor.max_force = FLIPPER_MAX_FORCE * 0.2
 
 
 def draw_segments(screen, segs, pygame):
