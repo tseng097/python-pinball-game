@@ -142,7 +142,15 @@ class PhysicsStabilityTests(unittest.TestCase):
         for step in range(120):
             flipper.set_active(True)
             step_space(space, dt)
-        for _ in range(240):
+
+        angle_at_release = flipper.body.angle
+        for _ in range(60):
+            flipper.set_active(False)
+            step_space(space, dt)
+
+        self.assertLess(abs(flipper.body.angle - flipper.rest_angle), abs(angle_at_release - flipper.rest_angle))
+
+        for _ in range(180):
             flipper.set_active(False)
             step_space(space, dt)
 

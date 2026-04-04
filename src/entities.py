@@ -132,7 +132,7 @@ class Flipper:
             self.motor.rate = self.up_speed
             self.motor.max_force = FLIPPER_MAX_FORCE
         else:
-            self.motor.rate = 0.0
+            self.motor.rate = self.down_speed
             self.motor.max_force = FLIPPER_MAX_FORCE * 0.2
 
 
