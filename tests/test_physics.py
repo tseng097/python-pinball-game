@@ -124,6 +124,25 @@ class PhysicsStabilityTests(unittest.TestCase):
             self.assertLessEqual(x, WIDTH + 10)
             self.assertGreaterEqual(y, -10)
 
+    def test_wall_bounces_do_not_add_energy(self):
+        space = pymunk.Space()
+        configure_space(space)
+        space.gravity = (0, 0)
+
+        create_boundaries(space)
+        ball = create_ball(space, x=WIDTH / 2, y=HEIGHT / 2)
+        ball.body.velocity = (1500, 700)
+
+        initial_speed = ball.body.velocity.length
+        max_speed = initial_speed
+
+        dt = 1 / 120.0
+        for _ in range(600):
+            step_space(space, dt)
+            max_speed = max(max_speed, ball.body.velocity.length)
+
+        self.assertLessEqual(max_speed, initial_speed * 1.05)
+
     def test_flipper_returns_to_rest_when_released(self):
         space = pymunk.Space()
         configure_space(space)

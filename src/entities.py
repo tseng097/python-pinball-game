@@ -9,6 +9,8 @@ from .settings import (
     BALL_RADIUS,
     BUMPER_COLOR,
     BUMPER_ELASTICITY,
+    DRAIN_ELASTICITY,
+    WALL_ELASTICITY,
     FLIPPER_COLOR,
     FLIPPER_ANGULAR_VELOCITY_LIMIT,
     FLIPPER_MAX_FORCE,
@@ -40,14 +42,14 @@ def create_boundaries(space):
 
     for a, b, r in wall_specs:
         s = pymunk.Segment(static, a, b, r)
-        s.elasticity = 0.9
+        s.elasticity = WALL_ELASTICITY
         s.friction = 0.6
         segs.append(s)
 
     drain_left = pymunk.Segment(static, (220, 95), (280, 70), 3)
     drain_right = pymunk.Segment(static, (WIDTH - 220, 95), (WIDTH - 280, 70), 3)
     for s in (drain_left, drain_right):
-        s.elasticity = 0.7
+        s.elasticity = DRAIN_ELASTICITY
         s.friction = 0.8
         segs.append(s)
 
