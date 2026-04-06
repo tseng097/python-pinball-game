@@ -11,6 +11,7 @@ import pymunk
 from src.entities import Flipper, create_ball, create_boundaries, create_bumpers
 from src.physics import configure_space, step_space
 from src.settings import (
+    BALL_ANGULAR_VELOCITY_LIMIT,
     FLIPPER_ANGULAR_VELOCITY_LIMIT,
     FLIPPER_SPRING_DAMPING,
     FLIPPER_SPRING_STIFFNESS,
@@ -51,6 +52,20 @@ class PhysicsStabilityTests(unittest.TestCase):
 
         step_space(space, 1 / 60.0)
         self.assertLessEqual(ball.body.velocity.length, MAX_BALL_SPEED + 1e-3)
+
+    def test_ball_angular_velocity_cap_applies(self):
+        space = pymunk.Space()
+        configure_space(space)
+
+        create_boundaries(space)
+        ball = create_ball(space)
+        ball.body.angular_velocity = BALL_ANGULAR_VELOCITY_LIMIT * 10
+
+        step_space(space, 1 / 60.0)
+        self.assertLessEqual(
+            abs(ball.body.angular_velocity),
+            BALL_ANGULAR_VELOCITY_LIMIT + 1e-3,
+        )
 
     def test_step_space_clamps_large_dt(self):
         space = pymunk.Space()

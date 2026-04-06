@@ -7,6 +7,7 @@ from .settings import (
     BALL_FRICTION,
     BALL_MASS,
     BALL_RADIUS,
+    BALL_ANGULAR_VELOCITY_LIMIT,
     BUMPER_COLOR,
     BUMPER_ELASTICITY,
     DRAIN_ELASTICITY,
@@ -79,6 +80,7 @@ def create_ball(space, x=545, y=150):
     body = pymunk.Body(BALL_MASS, moment)
     body.position = (x, y)
     body.velocity_limit = MAX_BALL_SPEED
+    body.angular_velocity_limit = BALL_ANGULAR_VELOCITY_LIMIT
     shape = pymunk.Circle(body, BALL_RADIUS)
     shape.elasticity = BALL_ELASTICITY
     shape.friction = BALL_FRICTION
