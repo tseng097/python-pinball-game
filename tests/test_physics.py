@@ -193,6 +193,20 @@ class PhysicsStabilityTests(unittest.TestCase):
         self.assertGreater(FLIPPER_SPRING_STIFFNESS, 0)
         self.assertGreater(FLIPPER_SPRING_DAMPING, 0)
 
+    def test_bumper_bounces_keep_speed_capped(self):
+        space = pymunk.Space()
+        configure_space(space)
+
+        create_boundaries(space)
+        create_bumpers(space)
+        ball = create_ball(space, x=300, y=620)
+        ball.body.velocity = (0, 1800)
+
+        dt = 1 / 120.0
+        for _ in range(720):
+            step_space(space, dt)
+            self.assertLessEqual(ball.body.velocity.length, MAX_BALL_SPEED + 1e-3)
+
 
 if __name__ == "__main__":
     unittest.main()
