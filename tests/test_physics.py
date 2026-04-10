@@ -13,6 +13,7 @@ from src.physics import configure_space, step_space
 from src.settings import (
     BALL_ANGULAR_VELOCITY_LIMIT,
     FLIPPER_ANGULAR_VELOCITY_LIMIT,
+    FLIPPER_LIMIT_BUFFER,
     FLIPPER_SPRING_DAMPING,
     FLIPPER_SPRING_STIFFNESS,
     MAX_BALL_SPEED,
@@ -192,6 +193,39 @@ class PhysicsStabilityTests(unittest.TestCase):
         self.assertLess(abs(flipper.body.angular_velocity), 1.0)
         self.assertGreater(FLIPPER_SPRING_STIFFNESS, 0)
         self.assertGreater(FLIPPER_SPRING_DAMPING, 0)
+
+    def test_flipper_motor_idles_near_limits(self):
+        space = pymunk.Space()
+        configure_space(space)
+        space.gravity = (0, 0)
+
+        flipper = Flipper(
+            space,
+            pos=(240, 145),
+            length=90,
+            rest_angle=-0.45,
+            max_angle=0.55,
+            is_left=True,
+        )
+
+        dt = 1 / 120.0
+        for _ in range(240):
+            flipper.set_active(True)
+            step_space(space, dt)
+
+        flipper.set_active(True)
+        self.assertLessEqual(flipper.body.angle, flipper.max_angle + 0.05)
+        self.assertEqual(flipper.motor.rate, 0.0)
+        self.assertLessEqual(flipper.body.angle, flipper.max_angle + FLIPPER_LIMIT_BUFFER + 0.1)
+
+        for _ in range(240):
+            flipper.set_active(False)
+            step_space(space, dt)
+
+        flipper.set_active(False)
+        self.assertGreaterEqual(flipper.body.angle, flipper.rest_angle - 0.05)
+        self.assertEqual(flipper.motor.rate, 0.0)
+        self.assertGreaterEqual(flipper.body.angle, flipper.rest_angle - FLIPPER_LIMIT_BUFFER - 0.1)
 
     def test_bumper_bounces_keep_speed_capped(self):
         space = pymunk.Space()

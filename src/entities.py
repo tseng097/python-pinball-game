@@ -15,6 +15,7 @@ from .settings import (
     FLIPPER_COLOR,
     FLIPPER_ANGULAR_VELOCITY_LIMIT,
     FLIPPER_MAX_FORCE,
+    FLIPPER_LIMIT_BUFFER,
     FLIPPER_SPRING_DAMPING,
     FLIPPER_SPRING_STIFFNESS,
     HEIGHT,
@@ -133,10 +134,16 @@ class Flipper:
 
     def set_active(self, active: bool):
         if active:
-            self.motor.rate = self.up_speed
+            if self.body.angle >= self.max_angle - FLIPPER_LIMIT_BUFFER:
+                self.motor.rate = 0.0
+            else:
+                self.motor.rate = self.up_speed
             self.motor.max_force = FLIPPER_MAX_FORCE
         else:
-            self.motor.rate = self.down_speed
+            if self.body.angle <= self.rest_angle + FLIPPER_LIMIT_BUFFER:
+                self.motor.rate = 0.0
+            else:
+                self.motor.rate = self.down_speed
             self.motor.max_force = FLIPPER_MAX_FORCE * 0.2
 
 
