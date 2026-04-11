@@ -97,6 +97,8 @@ class Flipper:
         moment = pymunk.moment_for_segment(mass, (0, 0), (length, 0), 8)
         self.body = pymunk.Body(mass, moment, body_type=pymunk.Body.DYNAMIC)
         self.body.position = pos
+        self.body.angle = rest_angle
+        self.body.angular_velocity = 0.0
         self.shape = pymunk.Segment(self.body, (0, 0), (length, 0), 8)
         self.shape.elasticity = 0.4
         self.shape.friction = 1.0

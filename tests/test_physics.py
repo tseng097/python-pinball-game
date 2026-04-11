@@ -108,6 +108,38 @@ class PhysicsStabilityTests(unittest.TestCase):
             FLIPPER_ANGULAR_VELOCITY_LIMIT + 0.5,
         )
 
+    def test_flippers_start_at_rest_angle(self):
+        space = pymunk.Space()
+        configure_space(space)
+        space.gravity = (0, 0)
+
+        left = Flipper(
+            space,
+            pos=(240, 145),
+            length=90,
+            rest_angle=-0.45,
+            max_angle=0.55,
+            is_left=True,
+        )
+        right = Flipper(
+            space,
+            pos=(360, 145),
+            length=-90,
+            rest_angle=3.59,
+            max_angle=4.58,
+            is_left=False,
+        )
+
+        self.assertAlmostEqual(left.body.angle, left.rest_angle, delta=1e-4)
+        self.assertAlmostEqual(right.body.angle, right.rest_angle, delta=1e-4)
+
+        step_space(space, 1 / 120.0)
+
+        self.assertGreaterEqual(left.body.angle, left.rest_angle - 0.05)
+        self.assertLessEqual(left.body.angle, left.max_angle + 0.05)
+        self.assertGreaterEqual(right.body.angle, right.rest_angle - 0.05)
+        self.assertLessEqual(right.body.angle, right.max_angle + 0.05)
+
     def test_fast_ball_does_not_escape_walls(self):
         space = pymunk.Space()
         configure_space(space)
