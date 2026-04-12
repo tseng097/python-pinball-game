@@ -257,6 +257,7 @@ class PhysicsStabilityTests(unittest.TestCase):
         flipper.set_active(False)
         self.assertGreaterEqual(flipper.body.angle, flipper.rest_angle - 0.05)
         self.assertEqual(flipper.motor.rate, 0.0)
+        self.assertEqual(flipper.motor.max_force, 0.0)
         self.assertGreaterEqual(flipper.body.angle, flipper.rest_angle - FLIPPER_LIMIT_BUFFER - 0.1)
 
     def test_bumper_bounces_keep_speed_capped(self):

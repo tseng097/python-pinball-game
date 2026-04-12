@@ -146,7 +146,8 @@ class Flipper:
                 self.motor.rate = 0.0
             else:
                 self.motor.rate = self.down_speed
-            self.motor.max_force = FLIPPER_MAX_FORCE * 0.2
+            # Let the spring handle return torque to avoid the motor fighting it.
+            self.motor.max_force = 0.0
 
 
 def draw_segments(screen, segs, pygame):
