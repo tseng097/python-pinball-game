@@ -19,6 +19,8 @@ from .settings import (
     FLIPPER_SPRING_DAMPING,
     FLIPPER_SPRING_STIFFNESS,
     HEIGHT,
+    LAUNCHER_LANE_X_MIN,
+    LAUNCHER_LANE_Y_MAX,
     MAX_BALL_SPEED,
     WALL_COLOR,
     WIDTH,
@@ -88,6 +90,18 @@ def create_ball(space, x=545, y=150):
     shape.collision_type = 1
     space.add(body, shape)
     return shape
+
+
+def is_ball_in_launcher_lane(body: pymunk.Body) -> bool:
+    x, y = body.position
+    return x >= LAUNCHER_LANE_X_MIN and y <= LAUNCHER_LANE_Y_MAX
+
+
+def apply_launcher_impulse(body: pymunk.Body, impulse: float) -> bool:
+    if not is_ball_in_launcher_lane(body):
+        return False
+    body.apply_impulse_at_local_point((0, impulse), (0, 0))
+    return True
 
 
 class Flipper:

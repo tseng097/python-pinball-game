@@ -15,6 +15,7 @@ from .settings import (
 )
 from .entities import (
     Flipper,
+    apply_launcher_impulse,
     create_ball,
     create_boundaries,
     create_bumpers,
@@ -22,6 +23,7 @@ from .entities import (
     draw_bumpers,
     draw_flipper,
     draw_segments,
+    is_ball_in_launcher_lane,
 )
 
 
@@ -126,18 +128,20 @@ class PinballGame:
         if not self.ball:
             return
         force = min(self.launch_power, LAUNCHER_MAX_FORCE)
-        self.ball.body.apply_impulse_at_local_point((0, force), (0, 0))
+        apply_launcher_impulse(self.ball.body, force)
         self.launch_power = 0.0
 
     def update(self, dt):
         if self.game_over:
             return
 
-        if self.space_held and self.ball:
+        if self.space_held and self.ball and is_ball_in_launcher_lane(self.ball.body):
             self.launch_power = min(
                 LAUNCHER_MAX_FORCE,
                 self.launch_power + LAUNCHER_CHARGE_RATE * dt,
             )
+        elif self.space_held:
+            self.launch_power = 0.0
 
         step_space(self.space, dt)
 

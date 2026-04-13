@@ -8,7 +8,14 @@ sys.path.insert(0, ROOT)
 
 import pymunk
 
-from src.entities import Flipper, create_ball, create_boundaries, create_bumpers
+from src.entities import (
+    Flipper,
+    apply_launcher_impulse,
+    create_ball,
+    create_boundaries,
+    create_bumpers,
+    is_ball_in_launcher_lane,
+)
 from src.physics import configure_space, step_space
 from src.settings import (
     BALL_ANGULAR_VELOCITY_LIMIT,
@@ -18,6 +25,8 @@ from src.settings import (
     FLIPPER_SPRING_STIFFNESS,
     MAX_BALL_SPEED,
     HEIGHT,
+    LAUNCHER_LANE_X_MIN,
+    LAUNCHER_LANE_Y_MAX,
     PHYSICS_MAX_DT,
     WIDTH,
 )
@@ -259,6 +268,32 @@ class PhysicsStabilityTests(unittest.TestCase):
         self.assertEqual(flipper.motor.rate, 0.0)
         self.assertEqual(flipper.motor.max_force, 0.0)
         self.assertGreaterEqual(flipper.body.angle, flipper.rest_angle - FLIPPER_LIMIT_BUFFER - 0.1)
+
+    def test_launcher_impulse_only_applies_in_lane(self):
+        space = pymunk.Space()
+        configure_space(space)
+        space.gravity = (0, 0)
+
+        create_boundaries(space)
+        ball = create_ball(space)
+
+        self.assertGreaterEqual(ball.body.position.x, LAUNCHER_LANE_X_MIN)
+        self.assertLessEqual(ball.body.position.y, LAUNCHER_LANE_Y_MAX)
+        self.assertTrue(is_ball_in_launcher_lane(ball.body))
+
+        ball.body.velocity = (0, 0)
+        applied = apply_launcher_impulse(ball.body, 2000)
+        self.assertTrue(applied)
+        step_space(space, 1 / 120.0)
+        self.assertGreater(ball.body.velocity.y, 0)
+
+        ball.body.position = (WIDTH / 2, HEIGHT / 2)
+        ball.body.velocity = (0, 0)
+        self.assertFalse(is_ball_in_launcher_lane(ball.body))
+        applied = apply_launcher_impulse(ball.body, 2000)
+        self.assertFalse(applied)
+        step_space(space, 1 / 120.0)
+        self.assertLess(abs(ball.body.velocity.y), 1e-3)
 
     def test_bumper_bounces_keep_speed_capped(self):
         space = pymunk.Space()
