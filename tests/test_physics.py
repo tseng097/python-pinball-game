@@ -257,6 +257,7 @@ class PhysicsStabilityTests(unittest.TestCase):
         flipper.set_active(True)
         self.assertLessEqual(flipper.body.angle, flipper.max_angle + 0.05)
         self.assertEqual(flipper.motor.rate, 0.0)
+        self.assertEqual(flipper.motor.max_force, 0.0)
         self.assertLessEqual(flipper.body.angle, flipper.max_angle + FLIPPER_LIMIT_BUFFER + 0.1)
 
         for _ in range(240):

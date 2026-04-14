@@ -152,9 +152,10 @@ class Flipper:
         if active:
             if self.body.angle >= self.max_angle - FLIPPER_LIMIT_BUFFER:
                 self.motor.rate = 0.0
+                self.motor.max_force = 0.0
             else:
                 self.motor.rate = self.up_speed
-            self.motor.max_force = FLIPPER_MAX_FORCE
+                self.motor.max_force = FLIPPER_MAX_FORCE
         else:
             if self.body.angle <= self.rest_angle + FLIPPER_LIMIT_BUFFER:
                 self.motor.rate = 0.0
